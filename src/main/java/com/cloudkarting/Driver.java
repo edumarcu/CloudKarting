@@ -25,7 +25,7 @@ import com.googlecode.objectify.ObjectifyService;
 @Entity
 public class Driver {
     @Id public Long id;
-    @Index public String name;
+    @Index public String name, surname;
     @Index public Date creationDate;
     public Date updateDate;
 
@@ -34,9 +34,10 @@ public class Driver {
         updateDate = creationDate;
     }
 
-    public Driver(String name) {
+    public Driver(String name, String surname) {
         this();
         this.name = name;
+        this.surname = surname;
     }
 
 //    public String getName() {
@@ -47,9 +48,9 @@ public class Driver {
 //        this.updateDate = updateDate;
 //    }
 
-    public Driver createDriver(@Named("name") String name) {
+    public Driver createDriver(@Named("name") String name, @Named("surname") String surname) {
 
-        ObjectifyService.ofy().save().entity(new Driver(name)).now();
+        ObjectifyService.ofy().save().entity(new Driver(name, surname)).now();
         return getDriver(name);
     }
 

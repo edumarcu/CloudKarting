@@ -83,8 +83,8 @@ cloudkarting.print = function(functionType, driver) {
  * Creates a Driver via the API.
  * @param {string} name Name of the Driver.
  */
-cloudkarting.createDriver = function(name) {
-    gapi.client.driver.driver.createDriver({"name": name}).execute(
+cloudkarting.createDriver = function(name, surname) {
+    gapi.client.driver.driver.createDriver({"name": name, "surname": surname}).execute(
         function(resp) {
             if (!resp.code) {
                 cloudkarting.print("create", resp);
@@ -171,6 +171,7 @@ cloudkarting.enableButtons = function() {
 
     document.getElementById("createDriver").onclick = function() {
         cloudkarting.createDriver(
+            document.getElementById("nameCreate").value,
             document.getElementById("nameCreate").value);
     }
 
