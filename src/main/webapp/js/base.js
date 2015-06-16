@@ -57,10 +57,11 @@ cloudkarting.auth = function() {
     if (!cloudkarting.signedIn) {
         cloudkarting.signin(false,
             cloudkarting.userAuthed);
-    } else {
+    }
+/*    else {
         cloudkarting.signedIn = false;
         document.getElementById("signinButton").innerHTML = "Sign in";
-    }
+    }*/
 };
 
 /**
