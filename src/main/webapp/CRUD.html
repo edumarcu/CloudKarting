@@ -106,9 +106,41 @@
     <script type="text/javascript">
         function init() {
             cloudkarting.init('//' + window.location.host + '/_ah/api');
+           //cloudkarting.enableButtons = function() {
+
+                document.getElementById("createDriver").onclick = function() {
+                cloudkarting.createDriver(
+                document.getElementById("nameCreate").value,
+                document.getElementById("nameCreate").value);
+                }
+
+                document.getElementById("getDriver").onclick = function() {
+                cloudkarting.getDriver(
+                document.getElementById("nameGet").value);
+                }
+
+                document.getElementById("updateDriver").onclick = function() {
+                cloudkarting.updateDriver(
+                document.getElementById("nameUpdate").value);
+                }
+
+                document.getElementById("deleteDriver").onclick = function() {
+                cloudkarting.deleteDriver(
+                document.getElementById("nameDelete").value);
+                }
+
+                document.getElementById("listDrivers").onclick = function() {
+                cloudkarting.listDrivers();
+                }
+
+                document.getElementById("signinButton").onclick = function() {
+                cloudkarting.auth();
+                }
+           // };
         }
     </script>
     <script src="https://apis.google.com/js/client.js?onload=init"></script>
+
 </div>
 </body>
 </html>

@@ -150,13 +150,17 @@ cloudkarting.deleteDriver = function(name) {
 cloudkarting.listDrivers = function() {
     gapi.client.driver.driver.listDrivers().execute(
         function(resp) {
+
             if (!resp.code) {
+
                 resp.items = resp.items || [];
                 if (resp.items.length == 0) {
                      cloudkarting.print("list");
                 }
                 else {
+                console.log(resp.items);
                     for (var i = 0; i < resp.items.length; i++) {
+
                         cloudkarting.print("list " + i, resp.items[i]);
                     }
                 }
@@ -167,53 +171,20 @@ cloudkarting.listDrivers = function() {
 };
 
 /**
- * Enables the button callbacks in the UI.
- */
-cloudkarting.enableButtons = function() {
-
-    document.getElementById("createDriver").onclick = function() {
-        cloudkarting.createDriver(
-            document.getElementById("nameCreate").value,
-            document.getElementById("nameCreate").value);
-    }
-
-    document.getElementById("getDriver").onclick = function() {
-        cloudkarting.getDriver(
-            document.getElementById("nameGet").value);
-    }
-
-    document.getElementById("updateDriver").onclick = function() {
-        cloudkarting.updateDriver(
-            document.getElementById("nameUpdate").value);
-    }
-
-        document.getElementById("deleteDriver").onclick = function() {
-            cloudkarting.deleteDriver(
-                document.getElementById("nameDelete").value);
-        }
-
-    document.getElementById("listDrivers").onclick = function() {
-        cloudkarting.listDrivers();
-    }
-  
-    document.getElementById("signinButton").onclick = function() {
-        cloudkarting.auth();
-    }
-};
-
-/**
  * Initializes the application.
  * @param {string} apiRoot Root of the API's path.
  */
-cloudkarting.init = function(apiRoot) {
+cloudkarting.init = function(apiRoot, functionAfterInit) {
     // Loads the OAuth and driver APIs asynchronously, and triggers login
     // when they have completed.
     var apisToLoad;
     var callback = function() {
         if (--apisToLoad == 0) {
-            cloudkarting.enableButtons();
             cloudkarting.signin(true,
                 cloudkarting.userAuthed);
+            if (functionAfterInit) {
+                functionAfterInit();
+            }
         }
     }
 
