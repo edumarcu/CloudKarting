@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Cloud Karting</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon" sizes="16x16">
+    <link type="text/css" rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <!--<link type="text/css" rel="stylesheet" href="/css/style.css">-->
+</head>
+<body>
+
+    <nav class="navbar navbar-inverse">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">Cloud Karting</a>
+            </div>
+            <div class="collapse navbar-collapse" id="myNavbar">
+                <ul class="nav navbar-nav">
+                    <li><a href="/carreras.html">Carreras</a></li>
+                    <li><a href="/pilotos.html">Pilotos</a></li>
+                    <li><a href="/CRUD.html">CRUD</a></li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="javascript:void(0);" id="signinButton"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div id="race">
+            <div class="form-group">
+                <label for="gp">GP</label>
+                <input type="text" class="form-control" id="gp" autocomplete="off">
+            </div>
+            <div class="form-group">
+                <label for="circuit">Circuito</label>
+                <select id="circuit">
+                    <option value="zuera">CIRCUITO INTERNACIONAL DE ZUERA</option>
+                    <option value="alcañiz">CIRCUITO DE ALCAÑIZ</option>
+                    <option value="vendrell">CIRCUITO DE EL VENDRELL</option>
+                    <option value="torremocha">CIRCUITO DE TORREMOCHA</option>
+                    <option value="oropesa">CIRCUITOS OROPESA / BENICASIM</option>
+                    <option value="torregrossa">CIRCUITO TORREGROSSA LÉRIDA</option>
+                    <option value="navarra">CIRCUITO LOS ARCOS NAVARRA</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="date">Fecha</label>
+                <input type="datetime-local" class="form-control" id="date" autocomplete="off">
+            </div>
+            <div class="form-group">
+                <label for="race-drivers">Pilotos</label>
+                <table class="table" id="race-drivers">
+                    <thead>
+                    <tr>
+                        <th>Piloto</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+            <div id="id">
+            </div>
+            <div id="race-buttons" class="form-group">
+                <button id="add-drivers-race" type="button" class="btn btn-small">Añadir pilotos</button>
+            </div>
+        </div>
+        <div id="buttons" class="form-group">
+            <button id="previous-race" type="button" class="btn btn-small" disabled>
+                <span class="glyphicon glyphicon-chevron-left"></span>
+            </button>
+            <button id="save-race" type="button" class="btn btn-small">Guardar</button>
+            <button id="next-race" type="button" class="btn btn-small" disabled>
+                <span class="glyphicon glyphicon-chevron-right"></span>
+            </button>
+        </div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+    <script src="/js/base.js"></script>
+    <script src="/js/races.js"></script>
+    <script src="https://apis.google.com/js/client.js?onload=init"></script>
+</body>
+</html>

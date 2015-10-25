@@ -70,6 +70,7 @@ public class Driver {
 
     @ApiMethod(name="getDriverById", path="getDriverById")
     public Driver getDriverById(@Named("id") Long id) {
+        //System.out.println(ObjectifyService.ofy().load().type(Driver.class).id(id).now());
         return ObjectifyService.ofy().load().type(Driver.class).id(id).now();
     }
 

@@ -1,91 +1,26 @@
 /**
  * @fileoverview
- * Provides methods for the interaction with the DriversCRUD API.
+ * Drivers management
  *
  * @author edumarcu
  */
 
-/** global namespace for projects. */
-var cloudkarting = cloudkarting || {};
-
 /**
- * Client ID of the application (from the APIs Console).
- * @type {string}
- */
-cloudkarting.CLIENT_ID = "433183875830-i5ssqq1gqfpi5ourtt3dneou72davirm.apps.googleusercontent.com";
-
-/**
- * Scopes used by the application.
- * @type {string}
- */
-cloudkarting.SCOPES = "https://www.googleapis.com/auth/userinfo.email";
-
-/**
- * Whether or not the user is signed in.
- * @type {boolean}
- */
-cloudkarting.signedIn = false;
-
-/**
- * Initializes the application.
- * @param {string} apiRoot Root of the API's path.
- */
-cloudkarting.init = function(apiRoot, functionAfterInit) {
-    // Loads the OAuth and driver APIs asynchronously, and triggers login
-    // when they have completed.
-    var apisToLoad;
-    var callback = function() {
-        if (--apisToLoad == 0) {
-            cloudkarting.signin(true,
-                cloudkarting.userAuthed);
-            if (functionAfterInit) {
-                functionAfterInit();
-            }
-        }
+* Initialize the API.
+*/
+function afterInit() {
+    console.log("OK!");
+    document.getElementById("create-driver").onclick = function(e) {
+        e.target.disabled = true;
+        cloudkarting.createDriver(
+            document.getElementById("name").value,
+            document.getElementById("surname").value
+        );
+        document.getElementById("name").value = "";
+        document.getElementById("surname").value = "";
     }
-
-    apisToLoad = 2; // must match number of calls to gapi.client.load()
-    gapi.client.load("driver", "v1", callback, apiRoot);
-    gapi.client.load("oauth2", "v2", callback);
-
-};
-
-/**
- * Loads the application UI after the user has completed auth.
- */
-cloudkarting.userAuthed = function() {
-    var request = gapi.client.oauth2.userinfo.get().execute(function(resp) {
-        if (!resp.code) {
-            cloudkarting.signedIn = true;
-            document.getElementById("signinButton").innerHTML = "Sign out";
-        }
-    });
-};
-
-/**
- * Handles the auth flow, with the given value for immediate mode.
- * @param {boolean} mode Whether or not to use immediate mode.
- * @param {Function} callback Callback to call on completion.
- */
-cloudkarting.signin = function(mode, callback) {
-    gapi.auth.authorize({client_id: cloudkarting.CLIENT_ID,
-        scope: cloudkarting.SCOPES, immediate: mode},
-        callback);
-};
-
-/**
- * Presents the user with the authorization popup.
- */
-cloudkarting.auth = function() {
-    if (!cloudkarting.signedIn) {
-        cloudkarting.signin(false,
-            cloudkarting.userAuthed);
-    }
-/*    else {
-        cloudkarting.signedIn = false;
-        document.getElementById("signinButton").innerHTML = "Sign in";
-    }*/
-};
+    cloudkarting.listDrivers();
+}
 
 /**
  * Lists Drivers via the API.
@@ -214,7 +149,9 @@ cloudkarting.listDrivers = function() {
                         tbodyElement.appendChild(rowElement);
                     }
                 }
-             }
+            } else {
+                window.alert(resp.message);
+            }
         }
     );
 };

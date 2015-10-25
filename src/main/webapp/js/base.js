@@ -1,7 +1,6 @@
-
 /**
  * @fileoverview
- * Provides methods for the interaction with the DriversCRUD API.
+ * Base for load API and auth
  *
  * @author edumarcu
  */
@@ -65,132 +64,26 @@ cloudkarting.auth = function() {
 };
 
 /**
- * Prints a greeting to the Driver log.
- * param {Object} Driver to print.
- */
-cloudkarting.print = function(functionType, driver) {
-    var element = document.createElement("div");
-    element.classList.add("row");
-    if (driver == undefined) {
-        element.innerHTML = functionType;
-    }
-    else {
-        element.innerHTML = functionType + " " + driver.name + " " + driver.creationDate + " " +
-            driver.id + " " + driver.updateDate;
-    }
-    document.getElementById("outputLog").appendChild(element);
-};
-
-/**
- * Creates a Driver via the API.
- * @param {string} name Name of the Driver.
- */
-cloudkarting.createDriver = function(name, surname) {
-    gapi.client.driver.driver.createDriver({"name": name, "surname": surname}).execute(
-        function(resp) {
-            if (!resp.code) {
-                cloudkarting.print("create", resp);
-            } else {
-                window.alert(resp.message);
-            }
-        }
-    );
-};
-
-/**
- * Gets a Driver via the API.
- * @param {string} name of the Driver.
- */
-cloudkarting.getDriver = function(name) {
-    gapi.client.driver.driver.getDriver({"name": name}).execute(
-        function(resp) {
-            if (!resp.code) {
-                cloudkarting.print("get", resp);
-            } else {
-                window.alert(resp.message);
-            }
-        }
-    );
-};
-
-/**
- * Updates a Driver via the API.
- * @param {string} name of the Driver.
- */
-cloudkarting.updateDriver = function(name) {
-    gapi.client.driver.driver.updateDriver({"name": name}).execute(
-        function(resp) {
-            if (!resp.code) {
-                cloudkarting.print("update", resp);
-            } else {
-                window.alert(resp.message);
-            }
-        }
-    );
-};
-
-/**
- * Deletes a Driver via the API.
- * @param {string} name of the Driver.
- */
-cloudkarting.deleteDriver = function(name) {
-    gapi.client.driver.driver.deleteDriver({"name": name}).execute(
-        function(resp) {
-            if (!resp.code) {
-                cloudkarting.print("delete", resp);
-            } else {
-                window.alert(resp.message);
-            }
-        }
-    );
-};
-
-/**
- * Lists Drivers via the API.
- */
-cloudkarting.listDrivers = function() {
-    gapi.client.driver.driver.listDrivers().execute(
-        function(resp) {
-
-            if (!resp.code) {
-
-                resp.items = resp.items || [];
-                if (resp.items.length == 0) {
-                     cloudkarting.print("list");
-                }
-                else {
-                console.log(resp.items);
-                    for (var i = 0; i < resp.items.length; i++) {
-
-                        cloudkarting.print("list " + i, resp.items[i]);
-                    }
-                }
-           }
-        }
-
-    );
-};
-
-/**
  * Initializes the application.
  * @param {string} apiRoot Root of the API's path.
  */
-cloudkarting.init = function(apiRoot, functionAfterInit) {
-    // Loads the OAuth and driver APIs asynchronously, and triggers login
-    // when they have completed.
-    var apisToLoad;
-    var callback = function() {
-        if (--apisToLoad == 0) {
-            cloudkarting.signin(true,
-                cloudkarting.userAuthed);
-            if (functionAfterInit) {
-                functionAfterInit();
-            }
-        }
-    }
-
-    apisToLoad = 2; // must match number of calls to gapi.client.load()
-    gapi.client.load("driver", "v1", callback, apiRoot);
-    gapi.client.load("oauth2", "v2", callback);
-
-};
+ function init() {
+      // Loads the OAuth and driver APIs asynchronously, and triggers login
+          // when they have completed.
+     console.log("loading...");
+     var apiRoot = "//" + window.location.host + "/_ah/api";
+     var apisToLoad;
+     var callback = function() {
+         if (--apisToLoad == 0) {
+             cloudkarting.signin(true,
+                 cloudkarting.userAuthed);
+             if (afterInit) {
+                 afterInit();
+             }
+         }
+     }
+     apisToLoad = 3; // must match number of calls to gapi.client.load()
+     gapi.client.load("race", "v1", callback, apiRoot);
+     gapi.client.load("driver", "v1", callback, apiRoot);
+     gapi.client.load("oauth2", "v2", callback);
+ }
