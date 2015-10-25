@@ -103,6 +103,7 @@ cloudkarting.listDrivers = function() {
                     var rowElement;
                     var dataElement;
                     var date;
+
                     // clear table
                     var tbodyElement = document.querySelector("tbody");
                     while (tbodyElement.firstChild) {
@@ -125,7 +126,7 @@ cloudkarting.listDrivers = function() {
                         dataElement = document.createElement("td");
                         date = new Date(resp.items[i].creationDate);
                         dataElement.innerHTML =
-                            date.getDate() + "/" + date.getMonth() + "/" + date.getFullYear() + " " +
+                            date.getDate() + "/" + (date.getMonth() + 1) + "/" + date.getFullYear() + " " +
                             ("0" + date.getHours()).slice(-2) + ":" +
                             ("0" + date.getMinutes()).slice(-2) + ":" +
                             ("0" + date.getSeconds()).slice(-2);
@@ -136,7 +137,7 @@ cloudkarting.listDrivers = function() {
                         dataElement = document.createElement("td");
                         date = new Date(resp.items[i].updateDate);
                         dataElement.innerHTML =
-                            date.getDate() + "/" + date.getMonth() + "/" + date.getFullYear() + " " +
+                            date.getDate() + "/" + (date.getMonth() + 1) + "/" + date.getFullYear() + " " +
                             ("0" + date.getHours()).slice(-2) + ":" +
                             ("0" + date.getMinutes()).slice(-2) + ":" +
                             ("0" + date.getSeconds()).slice(-2);
@@ -166,7 +167,7 @@ cloudkarting.listDrivers = function() {
                                   updateButtonElement.parentElement.removeChild(updateButtonElement);
                                 }
 
-                                // disable create button
+                                // enable create button
                                 document.querySelector("#create-driver").disabled = false;
 
                             } else {
@@ -248,11 +249,14 @@ cloudkarting.updateDriver = function(id, name, surname) {
                // cloudkarting.print("update", resp);
                 //console.log(resp);
 
-                // remove button
+                // remove update button
                 var updateButtonElement = document.querySelector("#update-driver");
                 if (updateButtonElement.parentElement) {
                   updateButtonElement.parentElement.removeChild(updateButtonElement);
                 }
+
+                // enable create button
+                document.querySelector("#create-driver").disabled = false;
                 cloudkarting.listDrivers();
             } else {
                 window.alert(resp.message);
