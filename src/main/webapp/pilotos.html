@@ -9,7 +9,7 @@
     <link type="text/css" rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="/js/base.js"></script>
+    <script type="text/javascript" src="/js/drivers.js"></script>
     <script>
         function init() {
             console.log("loading..");
@@ -17,50 +17,13 @@
         }
         function afterInit() {
             console.log("OK!");
-            gapi.client.driver.driver.listDrivers().execute(
-                function(resp) {
-                    if (!resp.code) {
-                        resp.items = resp.items || [];
-                        if (resp.items.length == 0) {
-                             cloudkarting.print("list");
-                        }
-                        else {
-                            var rowElement;
-                            var dataElement;
-                            var date;
-                            for (var i = 0, len = resp.items.length; i < len; i++) {
-                                rowElement = document.createElement("tr");
-
-                                // Name
-                                dataElement = document.createElement("td");
-                                dataElement.innerHTML = resp.items[i].name;
-                                rowElement.appendChild(dataElement);
-
-                                // Surname
-                                dataElement = document.createElement("td");
-                                dataElement.innerHTML = resp.items[i].surname;
-                                rowElement.appendChild(dataElement);
-
-                                // Creation Date
-                                dataElement = document.createElement("td");
-                                date = new Date(resp.items[i].creationDate);
-                                dataElement.innerHTML = date.getDate() + "/" + date.getMonth() + "/" + date.getFullYear()
-                                    + " " + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
-                                rowElement.appendChild(dataElement);
-
-                                // Update Date
-                                dataElement = document.createElement("td");
-                                date = new Date(resp.items[i].updateDate);
-                                dataElement.innerHTML = date.getDate() + "/" + date.getMonth() + "/" + date.getFullYear()
-                                    + " " + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
-                                rowElement.appendChild(dataElement);
-
-                                $("tbody").append(rowElement);
-                            }
-                        }
-                     }
-                }
-            );
+            document.getElementById("create-driver").onclick = function() {
+                cloudkarting.createDriver(
+                    document.getElementById("name").value,
+                    document.getElementById("surname").value
+                );
+            }
+            cloudkarting.listDrivers();
         }
     </script>
     <script src="https://apis.google.com/js/client.js?onload=init"></script>
@@ -102,7 +65,19 @@
 </nav>
 
 <div class="container" id="listTable">
-
+    <form role="form" action="javascript:void(0);">
+        <div class="form-group">
+            <label for="name">Nombre</label>
+            <input type="text" class="form-control" id="name">
+        </div>
+        <div class="form-group">
+            <label for="surname">Apellidos</label>
+            <input type="text" class="form-control" id="surname">
+        </div>
+        <div id="buttons" class="form-group">
+            <input id="create-driver" type="submit" class="btn btn-small" value="Create">
+        </div>
+    </form>
     <table class="table" id="drivers">
         <thead>
         <tr>

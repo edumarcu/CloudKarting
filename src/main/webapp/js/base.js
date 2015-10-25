@@ -75,7 +75,8 @@ cloudkarting.print = function(functionType, driver) {
         element.innerHTML = functionType;
     }
     else {
-        element.innerHTML = functionType + " " + driver.name + " " + driver.creationDate + " " + driver.id + " " + driver.updateDate;
+        element.innerHTML = functionType + " " + driver.name + " " + driver.creationDate + " " +
+            driver.id + " " + driver.updateDate;
     }
     document.getElementById("outputLog").appendChild(element);
 };
