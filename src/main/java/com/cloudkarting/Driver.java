@@ -1,12 +1,14 @@
 package com.cloudkarting;
 
 import com.google.api.server.spi.config.Api;
+import com.google.api.server.spi.config.ApiMethod;
 
 import java.util.List;
 import java.util.Date;
 
 import javax.inject.Named;
 
+import com.googlecode.objectify.Key;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
 import com.googlecode.objectify.annotation.Index;
@@ -55,20 +57,32 @@ public class Driver {
 
     public Driver createDriver(@Named("name") String name, @Named("surname") String surname) {
 
-        ObjectifyService.ofy().save().entity(new Driver(name, surname)).now();
-        return getDriver(name);
+        Key<Driver> key = ObjectifyService.ofy().save().entity(new Driver(name, surname)).now();
+
+        //System.out.println(key.getId());
+        return getDriverById(key.getId());
     }
+
 
     public Driver getDriver(@Named("name") String name) {
         return ObjectifyService.ofy().load().type(Driver.class).filter("name", name).first().now();
     }
 
-    public Driver updateDriver(@Named("name") String name) {
-        Driver p = getDriver(name);
-        p.updateDate = new Date();
+    @ApiMethod(name="getDriverById", path="getDriverById")
+    public Driver getDriverById(@Named("id") Long id) {
+        return ObjectifyService.ofy().load().type(Driver.class).id(id).now();
+    }
 
-        ObjectifyService.ofy().save().entity(p).now();
-        return getDriver(name);
+    public Driver updateDriver(@Named("id") Long id, @Named("name") String name,
+                               @Named("surname") String surname) {
+
+        Driver d = getDriverById(id);
+        d.name = name;
+        d.surname = surname;
+        d.updateDate = new Date();
+
+        Key<Driver> key = ObjectifyService.ofy().save().entity(d).now();
+        return getDriverById(key.getId());
     }
 
     public Driver deleteDriver(@Named("name") String name) {
