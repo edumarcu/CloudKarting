@@ -152,36 +152,61 @@ cloudkarting.listDrivers = function() {
                         rowElement.onclick = function(e) {
                             //console.log(this);
                             var activeElement = document.querySelector(".active");
-                            if (activeElement) {
+
+                            if (activeElement == this) {
+                                // cancel the update
                                 activeElement.classList.remove("active");
-                            }
-                            this.classList.add("active");
-                            document.getElementById("name").value = this.firstChild.innerHTML;
-                            document.getElementById("surname").value = this.firstChild.nextSibling.innerHTML;
-                            document.getElementById("id").value = this.lastChild.innerHTML;
+                                document.getElementById("id").value = "";
+                                document.getElementById("name").value = "";
+                                document.getElementById("surname").value = "";
 
-                            // show Update button
-                            if (!document.getElementById("update-driver")) {
-                                var updateButtonElement = document.createElement("input");
-                                updateButtonElement.id = "update-driver";
-                                updateButtonElement.type = "submit";
-                                updateButtonElement.value = "Actualizar";
-                                updateButtonElement.classList.add("btn");
-                                updateButtonElement.classList.add("btn-small");
-
-                                updateButtonElement.onclick = function(e) {
-                                    e.target.disabled = true;
-                                    cloudkarting.updateDriver(
-                                        document.getElementById("id").value,
-                                        document.getElementById("name").value,
-                                        document.getElementById("surname").value
-                                    );
-                                    document.getElementById("id").value = "";
-                                    document.getElementById("name").value = "";
-                                    document.getElementById("surname").value = "";
+                                // remove update button
+                                var updateButtonElement = document.querySelector("#update-driver");
+                                if (updateButtonElement.parentElement) {
+                                  updateButtonElement.parentElement.removeChild(updateButtonElement);
                                 }
 
-                                document.getElementById("buttons").appendChild(updateButtonElement);
+                                // disable create button
+                                document.querySelector("#create-driver").disabled = false;
+
+                            } else {
+                                // disable create button
+                                document.querySelector("#create-driver").disabled = true;
+
+                                // active the row
+                                if (activeElement) {
+                                    activeElement.classList.remove("active");
+                                }
+                                this.classList.add("active");
+
+                                // fill teh form fields
+                                document.getElementById("name").value = this.firstChild.innerHTML;
+                                document.getElementById("surname").value = this.firstChild.nextSibling.innerHTML;
+                                document.getElementById("id").value = this.lastChild.innerHTML;
+
+                                // show Update button
+                                if (!document.getElementById("update-driver")) {
+                                    var updateButtonElement = document.createElement("input");
+                                    updateButtonElement.id = "update-driver";
+                                    updateButtonElement.type = "submit";
+                                    updateButtonElement.value = "Actualizar";
+                                    updateButtonElement.classList.add("btn");
+                                    updateButtonElement.classList.add("btn-small");
+
+                                    updateButtonElement.onclick = function(e) {
+                                        e.target.disabled = true;
+                                        cloudkarting.updateDriver(
+                                            document.getElementById("id").value,
+                                            document.getElementById("name").value,
+                                            document.getElementById("surname").value
+                                        );
+                                        document.getElementById("id").value = "";
+                                        document.getElementById("name").value = "";
+                                        document.getElementById("surname").value = "";
+                                    }
+
+                                    document.getElementById("buttons").appendChild(updateButtonElement);
+                                }
                             }
                         }
                         // add row
