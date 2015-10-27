@@ -6,29 +6,102 @@
  */
 
 /**
+* Global variables
+*/
+var drivers;
+
+/**
 * Initialize the API.
 */
 function afterInit() {
     console.log("OK!");
+
+    // attach handlers
     document.getElementById("circuit").addEventListener("change", handleSelectCircuit);
-    document.getElementById("add-drivers-race").addEventListener("click", handleAddDriversToRace);
     document.getElementById("save-race").addEventListener("click", handleSaveRace);
 
-    // add pilots to the race
-    if (document.getElementById("race-drivers")) {
-        //console.log("Add pilots");
-    }
-    /*gapi.client.race.race.listRaces().execute(
+    // get the drivers from DB and show the first row of the race drivers table
+    getDrivers(addRaceDriverRow);
+
+}
+
+function getDrivers(functionAfter) {
+    gapi.client.driver.driver.listDrivers().execute(
         function(resp) {
+            //console.log(resp);
             if (!resp.code) {
-                console.log(resp);
+                if (resp.items) {
+                    //console.log(resp.items);
+                    drivers = resp.items;
+                    if (functionAfter) {
+                        functionAfter(resp.items);
+                    }
+                }
+            } else {
+                window.alert(resp.message);
             }
         }
-    );*/
+    );
 }
 
 function handleSelectCircuit(e) {
     //console.log(document.getElementById("circuit").selectedIndex);
+    //console.log(e.target.value);
+    //console.log(e.target.options[e.target.selectedIndex].innerHTML);
+
+}
+
+function addRaceDriverRow() {
+    // create the row
+    var driverRowElement = document.createElement("tr");
+
+    // select the driver for the race
+    var driverDataElement = document.createElement("td");
+    driverRowElement.appendChild(driverDataElement);
+
+    var driverSelectElement = document.createElement("select");
+    driverSelectElement.id = "race-driver";
+    driverSelectElement.classList.add("form-control");
+    driverSelectElement.addEventListener("change", handleSelectRaceDriver);
+    driverSelectElement.drivers = drivers;
+    driverDataElement.appendChild(driverSelectElement);
+
+    var driverOptionElement;
+    for (var i = 0, len = drivers.length; i < len; i++) {
+        driverOptionElement = document.createElement("option");
+        driverOptionElement.value = drivers[i].id;
+        var initials = drivers[i].name[0].toUpperCase();
+        surnameParts = drivers[i].surname.split(' ');
+        for (var j = 0, l = surnameParts.length; j < l; j++) {
+            initials += surnameParts[j][0];
+        }
+        driverOptionElement.text = initials;
+
+        driverSelectElement.appendChild(driverOptionElement);
+        console.log(drivers[i]);
+    }
+
+    // add to the table
+    document.querySelector("#race-drivers tbody").appendChild(driverRowElement);
+}
+
+function handleSelectRaceDriver(e) {
+    console.log(e.target.options[e.target.selectedIndex].value);
+    //console.log(e.target.parentElement.parentElement);
+    //console.log(e.target.parentElement.parentElement.nextSibling);
+
+
+    // if is the last, add a new row
+    var raceDriverRowElement = e.target.parentElement.parentElement;
+    if (raceDriverRowElement.nextSibling == null) {
+        addRaceDriverRow();
+    }
+}
+
+function handleSaveRace(e) {
+    console.log(document.getElementById("gp").value);
+    console.log(document.getElementById("circuit").value);
+    console.log(document.getElementById("date").value);
     //console.log(e.target.value);
     //console.log(e.target.options[e.target.selectedIndex].innerHTML);
 
@@ -51,15 +124,6 @@ function handleAddDriversToRace(e) {
             }
         }
     );
-}
-
-function handleSaveRace(e) {
-    console.log(document.getElementById("gp").value);
-    console.log(document.getElementById("circuit").value);
-    console.log(document.getElementById("date").value);
-    //console.log(e.target.value);
-    //console.log(e.target.options[e.target.selectedIndex].innerHTML);
-
 }
 
 function createModalDriversToRace(drivers) {
