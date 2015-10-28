@@ -34,22 +34,28 @@ public class Race {
     @Index public Date date;
     @Index public Date creationDate;
     public Date updateDate;
+    public Long[] raceDrivers;
 
     public Race() {
         creationDate = new Date();
         updateDate = creationDate;
     }
 
-    public Race(String circuit, String gp, Date date) {
+    public Race(String circuit, String gp, Date date, Long[] raceDrivers) {
         this();
         this.circuit = circuit;
         this.gp = gp;
         this.date = date;
+        this.raceDrivers = raceDrivers;
+       // System.out.println(this.raceDrivers);
     }
 
-    public Race createRace(@Named("circuit") String circuit, @Named("gp") String gp, @Named("date") Date date) {
+    public Race createRace(@Named("circuit") String circuit,
+                           @Named("gp") String gp,
+                           @Named("date") Date date,
+                           @Named("raceDrivers") Long[] raceDrivers) {
 
-        Key<Race> key = ObjectifyService.ofy().save().entity(new Race(circuit, gp, date)).now();
+        Key<Race> key = ObjectifyService.ofy().save().entity(new Race(circuit, gp, date, raceDrivers)).now();
 
         return getRaceById(key.getId());
     }
@@ -60,13 +66,15 @@ public class Race {
     }
 
     public Race updateRace(@Named("id") Long id, @Named("circuit") String name,
-                           @Named("gp") String surname, @Named("date") Date date) {
+                           @Named("gp") String gp, @Named("date") Date date,
+                           @Named("raceDrivers") Long[] raceDrivers) {
 
         Race r = getRaceById(id);
         r.circuit = circuit;
         r.gp = gp;
         r.date = date;
         r.updateDate = new Date();
+        r.raceDrivers = raceDrivers;
 
         Key<Race> key = ObjectifyService.ofy().save().entity(r).now();
         return getRaceById(key.getId());

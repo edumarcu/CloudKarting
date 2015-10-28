@@ -9,6 +9,7 @@
 * Global variables
 */
 var drivers;
+var nRowsRaceDrivers = 0;
 
 /**
 * Initialize the API.
@@ -60,13 +61,15 @@ function addRaceDriverRow() {
     driverRowElement.appendChild(driverDataElement);
 
     var driverSelectElement = document.createElement("select");
-    driverSelectElement.id = "race-driver";
+    driverSelectElement.id = "race-driver-" + ++nRowsRaceDrivers;
     driverSelectElement.classList.add("form-control");
     driverSelectElement.addEventListener("change", handleSelectRaceDriver);
     driverSelectElement.drivers = drivers;
     driverDataElement.appendChild(driverSelectElement);
 
-    var driverOptionElement;
+    // Blank option
+    var driverOptionElement = document.createElement("option");
+    driverSelectElement.appendChild(driverOptionElement);
     for (var i = 0, len = drivers.length; i < len; i++) {
         driverOptionElement = document.createElement("option");
         driverOptionElement.value = drivers[i].id;
@@ -78,7 +81,7 @@ function addRaceDriverRow() {
         driverOptionElement.text = initials;
 
         driverSelectElement.appendChild(driverOptionElement);
-        console.log(drivers[i]);
+        //console.log(drivers[i]);
     }
 
     // add to the table
@@ -86,7 +89,7 @@ function addRaceDriverRow() {
 }
 
 function handleSelectRaceDriver(e) {
-    console.log(e.target.options[e.target.selectedIndex].value);
+    //console.log(e.target.options[e.target.selectedIndex].value);
     //console.log(e.target.parentElement.parentElement);
     //console.log(e.target.parentElement.parentElement.nextSibling);
 
@@ -105,6 +108,73 @@ function handleSaveRace(e) {
     //console.log(e.target.value);
     //console.log(e.target.options[e.target.selectedIndex].innerHTML);
 
+    // Check inputs
+    var elementsToCheck = [];
+    elementsToCheck.push("gp", "circuit", "date", "race-driver-1");
+    var elementsChecked = {};
+    for (var i = 0, l = elementsToCheck.length, element, checkOk = true; i < l; i++) {
+        element = document.getElementById(elementsToCheck[i]);
+        //console.log(element);
+        if (element.value == "") {
+            element.parentElement.classList.add("has-error");
+            checkOk = checkOk && false;
+        } else {
+            elementsChecked[elementsToCheck[i]] = element.value;
+            element.parentElement.classList.remove("has-error");
+            checkOk = checkOk && true;
+        }
+    }
+
+    // Save the race
+    if (checkOk) {
+        var raceDriversIds = [];
+        for (var i = 0; i < nRowsRaceDrivers - 1; i++) {
+            element = document.getElementById("race-driver-" + (i + 1));
+            console.log(element.value);
+            raceDriversIds.push(element.value);
+        }
+
+        // Create
+        var idRace = document.getElementById("idRace").value;
+        if (!idRace) {
+            gapi.client.race.race.createRace({"circuit": elementsChecked["circuit"],
+                                              "gp": elementsChecked["gp"],
+                                              "date": elementsChecked["date"],
+                                              "raceDrivers" : raceDriversIds,
+                                              }).execute(
+                function(resp) {
+                //console.log(resp);
+                    if (!resp.code) {
+                         console.log(resp);
+
+                         console.log("created");
+
+                    } else {
+                        window.alert(resp.message);
+                    }
+                }
+            );
+        }
+        // Update
+        else {
+            gapi.client.race.race.updateRace({"id": idRace,
+                                              "circuit": circuit,
+                                              "gp": gp,
+                                              "date": date,
+                                              "raceDrivers": raceDriversIds}).execute(
+                function(resp) {
+                //console.log(resp);
+                    if (!resp.code) {
+                         console.log(resp);
+                         console.log("updated");
+
+                    } else {
+                        window.alert(resp.message);
+                    }
+                }
+            );
+        }
+    }
 }
 
 function handleAddDriversToRace(e) {

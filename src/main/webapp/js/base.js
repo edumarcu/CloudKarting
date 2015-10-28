@@ -77,7 +77,7 @@ cloudkarting.auth = function() {
          if (--apisToLoad == 0) {
              cloudkarting.signin(true,
                  cloudkarting.userAuthed);
-             if (afterInit) {
+             if (typeof afterInit == "function") {
                  afterInit();
              }
          }
