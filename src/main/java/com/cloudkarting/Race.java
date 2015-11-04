@@ -9,6 +9,7 @@ import com.googlecode.objectify.annotation.Id;
 import com.googlecode.objectify.annotation.Index;
 
 import javax.inject.Named;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -49,7 +50,7 @@ public class Race {
         this.raceDrivers = raceDrivers;
        // System.out.println(this.raceDrivers);
     }
-
+    @ApiMethod(name = "createRace", path = "createRace", httpMethod = ApiMethod.HttpMethod.POST)
     public Race createRace(@Named("circuit") String circuit,
                            @Named("gp") String gp,
                            @Named("date") Date date,

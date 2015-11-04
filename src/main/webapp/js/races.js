@@ -137,10 +137,10 @@ function handleSaveRace(e) {
         // Create
         var idRace = document.getElementById("idRace").value;
         if (!idRace) {
-            gapi.client.race.race.createRace({"circuit": elementsChecked["circuit"],
+            gapi.client.race.createRace({"circuit": elementsChecked["circuit"],
                                               "gp": elementsChecked["gp"],
                                               "date": elementsChecked["date"],
-                                              "raceDrivers" : raceDriversIds,
+                                              "raceDrivers" : raceDriversIds
                                               }).execute(
                 function(resp) {
                 //console.log(resp);
@@ -150,6 +150,7 @@ function handleSaveRace(e) {
                          console.log("created");
 
                     } else {
+                    console.log("hola", resp);
                         window.alert(resp.message);
                     }
                 }
