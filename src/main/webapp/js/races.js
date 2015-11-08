@@ -85,12 +85,13 @@ console.log(iRaceDriver);
         driverOptionElement.value = drivers[i].id;
 
         // driver name
-        var initials = drivers[i].name[0].toUpperCase();
+       /* var initials = drivers[i].name[0].toUpperCase();
         surnameParts = drivers[i].surname.split(' ');
         for (var j = 0, l = surnameParts.length; j < l; j++) {
             initials += surnameParts[j][0];
         }
-        driverOptionElement.text = initials;
+        driverOptionElement.text = initials; */
+        driverOptionElement.text = drivers[i].name + ' ' + drivers[i].surname[0] + '.';
 
         // select the raceDriver
         if (raceDriver && raceDriver === drivers[i].id) {

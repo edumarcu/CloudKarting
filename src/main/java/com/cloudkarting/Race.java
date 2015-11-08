@@ -69,7 +69,7 @@ public class Race {
 
     @ApiMethod(name = "updateRace", path = "updateRace", httpMethod = ApiMethod.HttpMethod.POST)
     public Race updateRace(@Named("id") Long id,
-                           @Named("circuit") String name,
+                           @Named("circuit") String circuit,
                            @Named("gp") String gp,
                            @Named("date") Date date,
                            @Named("raceDrivers") Long[] raceDrivers) {
