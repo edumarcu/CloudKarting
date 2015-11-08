@@ -1,3 +1,7 @@
+#race, #buttons {
+    display: none;
+}
+
 #race-drivers select {
     width: auto !important;
     padding: 0px !important;

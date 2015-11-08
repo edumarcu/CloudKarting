@@ -26,7 +26,7 @@ function afterInit() {
  * Lists Drivers via the API.
  */
 cloudkarting.listDrivers = function() {
-    gapi.client.driver.driver.listDrivers().execute(
+    gapi.client.driver.listDrivers().execute(
         function(resp) {
             if (!resp.code) {
                 resp.items = resp.items || [];

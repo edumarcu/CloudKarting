@@ -93,6 +93,7 @@ public class Driver {
         return p;
     }
 
+    @ApiMethod(name = "listDrivers", path = "listDrivers", httpMethod = ApiMethod.HttpMethod.GET)
     public List<Driver> listDrivers() {
         return ObjectifyService.ofy()
                 .load()

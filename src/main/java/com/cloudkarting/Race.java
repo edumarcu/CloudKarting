@@ -81,6 +81,7 @@ public class Race {
         return getRaceById(key.getId());
     }
 
+    @ApiMethod(name = "listRaces", path = "listRaces", httpMethod = ApiMethod.HttpMethod.GET)
     public List<Race> listRaces() {
         return ObjectifyService.ofy()
                 .load()

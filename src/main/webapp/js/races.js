@@ -6,24 +6,103 @@
  */
 
 /**
-* Global variables
-*/
-var drivers;
-var nRowsRaceDrivers = 0;
-
-/**
 * Initialize the API.
 */
 function afterInit() {
     console.log("OK!");
 
+    // get the races and show the last, if there is none then new one
+    //getRaces();
+    executeAPIfunction("race", "listRaces", showFirstRace);
+
     // attach handlers
     document.getElementById("circuit").addEventListener("change", handleSelectCircuit);
     document.getElementById("save-race").addEventListener("click", handleSaveRace);
 
-    // get the drivers from DB and show the first row of the race drivers table
-    getDrivers(addRaceDriverRow);
 
+
+}
+
+function showFirstRace(races) {
+// If there is any race show the last one, else show a empty one
+    var race;
+    if (races.length !== 0) {
+        race = races[0];
+    }
+    executeAPIfunction("driver", "listDrivers", function(drivers){ showRace(race, drivers); });
+
+}
+
+function showRace(race, drivers) {
+// Fill the fields with te info of the Race retrieved
+    var i = 0;
+    if (race) {
+        $("#gp").val(race.gp);
+        $("#circuit").val(race.circuit);
+        $("#date").val(race.date.substring(0, 10));
+
+        // add a row per raceDriver and select in dropdown
+
+        for (var len = race.raceDrivers.length; i < len; i++) {
+            addRaceDriver(drivers, i + 1, race.raceDrivers[i]);
+        }
+
+        $("#id").val(race.id);
+    }
+    else {console.log("no race!");}
+
+    // add the new raceDriver row
+    addRaceDriver(drivers, i + 1);
+
+    // display the divs
+     $("#race").show("slow");
+     $("#buttons").show("slow");
+}
+
+function addRaceDriver(drivers, iRaceDriver, raceDriver) {
+// Add row into the able and select the raceDriver
+console.log(iRaceDriver);
+    // create the row
+    var driverRowElement = document.createElement("tr");
+
+    // select the driver for the race
+    var driverDataElement = document.createElement("td");
+    driverRowElement.appendChild(driverDataElement);
+    var driverSelectElement = document.createElement("select");
+    driverSelectElement.id = "race-driver-" + iRaceDriver;
+    driverSelectElement.classList.add("form-control");
+    driverSelectElement.addEventListener("change", function (e) { handleSelectRaceDriver(e, drivers, iRaceDriver) });
+   // driverSelectElement.drivers = drivers;
+    driverDataElement.appendChild(driverSelectElement);
+
+    // blank option
+    var driverOptionElement = document.createElement("option");
+    driverSelectElement.appendChild(driverOptionElement);
+
+    // populate dropdown
+    for (var i = 0, len = drivers.length; i < len; i++) {
+        driverOptionElement = document.createElement("option");
+        driverOptionElement.value = drivers[i].id;
+
+        // driver name
+        var initials = drivers[i].name[0].toUpperCase();
+        surnameParts = drivers[i].surname.split(' ');
+        for (var j = 0, l = surnameParts.length; j < l; j++) {
+            initials += surnameParts[j][0];
+        }
+        driverOptionElement.text = initials;
+
+        // select the raceDriver
+        if (raceDriver && raceDriver === drivers[i].id) {
+            driverOptionElement.selected = true;
+        }
+
+        driverSelectElement.appendChild(driverOptionElement);
+        //console.log(drivers[i]);
+    }
+
+    // add to the table
+    document.querySelector("#race-drivers tbody").appendChild(driverRowElement);
 }
 
 function getDrivers(functionAfter) {
@@ -88,7 +167,7 @@ function addRaceDriverRow() {
     document.querySelector("#race-drivers tbody").appendChild(driverRowElement);
 }
 
-function handleSelectRaceDriver(e) {
+function handleSelectRaceDriver(e, drivers, iRaceDriver) {
     //console.log(e.target.options[e.target.selectedIndex].value);
     //console.log(e.target.parentElement.parentElement);
     //console.log(e.target.parentElement.parentElement.nextSibling);
@@ -97,14 +176,14 @@ function handleSelectRaceDriver(e) {
     // if is the last, add a new row
     var raceDriverRowElement = e.target.parentElement.parentElement;
     if (raceDriverRowElement.nextSibling == null) {
-        addRaceDriverRow();
+        addRaceDriver(drivers, iRaceDriver + 1);
     }
 }
 
 function handleSaveRace(e) {
-    console.log(document.getElementById("gp").value);
-    console.log(document.getElementById("circuit").value);
-    console.log(document.getElementById("date").value);
+    //console.log(document.getElementById("gp").value);
+    //console.log(document.getElementById("circuit").value);
+    //console.log(document.getElementById("date").value);
     //console.log(e.target.value);
     //console.log(e.target.options[e.target.selectedIndex].innerHTML);
 
@@ -128,14 +207,13 @@ function handleSaveRace(e) {
     // Save the race
     if (checkOk) {
         var raceDriversIds = [];
-        for (var i = 0; i < nRowsRaceDrivers - 1; i++) {
-            element = document.getElementById("race-driver-" + (i + 1));
-            console.log(element.value);
-            raceDriversIds.push(element.value);
+        var nRowsRaceDrivers = $("#race-drivers tbody tr").length - 1;
+        for (var i = 0; i < nRowsRaceDrivers; i++) {
+            raceDriversIds.push(document.getElementById("race-driver-" + (i + 1)).value);
         }
 
-        // Create
         var idRace = document.getElementById("idRace").value;
+        // Create
         if (!idRace) {
             gapi.client.race.createRace({"circuit": elementsChecked["circuit"],
                                               "gp": elementsChecked["gp"],
@@ -146,11 +224,8 @@ function handleSaveRace(e) {
                 //console.log(resp);
                     if (!resp.code) {
                          console.log(resp);
-
                          console.log("created");
-
                     } else {
-                    console.log("hola", resp);
                         window.alert(resp.message);
                     }
                 }

@@ -65,7 +65,6 @@ cloudkarting.auth = function() {
 
 /**
  * Initializes the application.
- * @param {string} apiRoot Root of the API's path.
  */
  function init() {
       // Loads the OAuth and driver APIs asynchronously, and triggers login
@@ -87,3 +86,27 @@ cloudkarting.auth = function() {
      gapi.client.load("driver", "v1", callback, apiRoot);
      gapi.client.load("oauth2", "v2", callback);
  }
+
+ /**
+  * Execute API function.
+  */
+  function executeAPIfunction(API, APIfunction, functionIfSuccess, functionIfError) {
+   gapi.client[API][APIfunction]().execute(
+          function(resp) {
+              console.log(resp);
+              if (!resp.code) {
+                  if (resp.items) {
+                      //console.log(resp.items);
+                      if (functionIfSuccess) {
+                          functionIfSuccess(resp.items);
+                      }
+                  }
+              } else {
+                     if (functionIfError) {
+                         functionIfError(resp.message);
+                     }
+              }
+          }
+      );
+
+  }
