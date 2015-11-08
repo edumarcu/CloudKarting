@@ -47,7 +47,7 @@ function showRace(race, drivers) {
             addRaceDriver(drivers, i + 1, race.raceDrivers[i]);
         }
 
-        $("#id").val(race.id);
+        $("#idRace").val(race.id);
     }
     else {console.log("no race!");}
 
@@ -225,6 +225,7 @@ function handleSaveRace(e) {
                     if (!resp.code) {
                          console.log(resp);
                          console.log("created");
+                         $("#idRace").val(resp.id);
                     } else {
                         window.alert(resp.message);
                     }
@@ -233,11 +234,11 @@ function handleSaveRace(e) {
         }
         // Update
         else {
-            gapi.client.race.race.updateRace({"id": idRace,
-                                              "circuit": circuit,
-                                              "gp": gp,
-                                              "date": date,
-                                              "raceDrivers": raceDriversIds}).execute(
+            gapi.client.race.updateRace({"id": idRace,
+                                          "circuit": elementsChecked["circuit"],
+                                          "gp": elementsChecked["gp"],
+                                          "date": elementsChecked["date"],
+                                          "raceDrivers": raceDriversIds}).execute(
                 function(resp) {
                 //console.log(resp);
                     if (!resp.code) {

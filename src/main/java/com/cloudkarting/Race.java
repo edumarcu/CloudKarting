@@ -50,6 +50,7 @@ public class Race {
         this.raceDrivers = raceDrivers;
        // System.out.println(this.raceDrivers);
     }
+
     @ApiMethod(name = "createRace", path = "createRace", httpMethod = ApiMethod.HttpMethod.POST)
     public Race createRace(@Named("circuit") String circuit,
                            @Named("gp") String gp,
@@ -66,8 +67,11 @@ public class Race {
         return ObjectifyService.ofy().load().type(Race.class).id(id).now();
     }
 
-    public Race updateRace(@Named("id") Long id, @Named("circuit") String name,
-                           @Named("gp") String gp, @Named("date") Date date,
+    @ApiMethod(name = "updateRace", path = "updateRace", httpMethod = ApiMethod.HttpMethod.POST)
+    public Race updateRace(@Named("id") Long id,
+                           @Named("circuit") String name,
+                           @Named("gp") String gp,
+                           @Named("date") Date date,
                            @Named("raceDrivers") Long[] raceDrivers) {
 
         Race r = getRaceById(id);
