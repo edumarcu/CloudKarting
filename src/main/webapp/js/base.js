@@ -95,12 +95,12 @@ cloudkarting.auth = function() {
           function(resp) {
               console.log(resp);
               if (!resp.code) {
-                  if (resp.items) {
+                  //if (resp.items) {
                       //console.log(resp.items);
                       if (functionIfSuccess) {
                           functionIfSuccess(resp.items);
                       }
-                  }
+                  //}
               } else {
                      if (functionIfError) {
                          functionIfError(resp.message);

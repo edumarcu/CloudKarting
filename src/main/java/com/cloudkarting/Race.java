@@ -9,7 +9,7 @@ import com.googlecode.objectify.annotation.Id;
 import com.googlecode.objectify.annotation.Index;
 
 import javax.inject.Named;
-import java.util.ArrayList;
+
 import java.util.Date;
 import java.util.List;
 
@@ -28,6 +28,7 @@ import java.util.List;
     },
     audiences = {Constants.ANDROID_AUDIENCE}
 )
+
 @Entity
 public class Race {
     @Id public Long id;
@@ -36,18 +37,20 @@ public class Race {
     @Index public Date creationDate;
     public Date updateDate;
     public Long[] raceDrivers;
+    public Long[] qualiTimes;
 
     public Race() {
         creationDate = new Date();
         updateDate = creationDate;
     }
 
-    public Race(String circuit, String gp, Date date, Long[] raceDrivers) {
+    public Race(String circuit, String gp, Date date, Long[] raceDrivers, Long[] qualiTimes) {
         this();
         this.circuit = circuit;
         this.gp = gp;
         this.date = date;
         this.raceDrivers = raceDrivers;
+        this.qualiTimes = qualiTimes;
        // System.out.println(this.raceDrivers);
     }
 
@@ -55,9 +58,11 @@ public class Race {
     public Race createRace(@Named("circuit") String circuit,
                            @Named("gp") String gp,
                            @Named("date") Date date,
-                           @Named("raceDrivers") Long[] raceDrivers) {
+                           @Named("raceDrivers") Long[] raceDrivers,
+                           @Named("qualiTimes") Long[] qualiTimes) {
 
-        Key<Race> key = ObjectifyService.ofy().save().entity(new Race(circuit, gp, date, raceDrivers)).now();
+        Race race = new Race(circuit, gp, date, raceDrivers, qualiTimes);
+        Key<Race> key = ObjectifyService.ofy().save().entity(race).now();
 
         return getRaceById(key.getId());
     }
@@ -72,16 +77,18 @@ public class Race {
                            @Named("circuit") String circuit,
                            @Named("gp") String gp,
                            @Named("date") Date date,
-                           @Named("raceDrivers") Long[] raceDrivers) {
+                           @Named("raceDrivers") Long[] raceDrivers,
+                           @Named("qualiTimes") Long[] qualiTimes) {
 
-        Race r = getRaceById(id);
-        r.circuit = circuit;
-        r.gp = gp;
-        r.date = date;
-        r.updateDate = new Date();
-        r.raceDrivers = raceDrivers;
+        Race race = getRaceById(id);
+        race.circuit = circuit;
+        race.gp = gp;
+        race.date = date;
+        race.updateDate = new Date();
+        race.raceDrivers = raceDrivers;
+        race.qualiTimes = qualiTimes;
 
-        Key<Race> key = ObjectifyService.ofy().save().entity(r).now();
+        Key<Race> key = ObjectifyService.ofy().save().entity(race).now();
         return getRaceById(key.getId());
     }
 

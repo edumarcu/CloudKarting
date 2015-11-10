@@ -26,7 +26,7 @@ function afterInit() {
 function showFirstRace(races) {
 // If there is any race show the last one, else show a empty one
     var race;
-    if (races.length !== 0) {
+    if (races && races.length !== 0) {
         race = races[0];
     }
     executeAPIfunction("driver", "listDrivers", function(drivers){ showRace(race, drivers); });
@@ -44,7 +44,7 @@ function showRace(race, drivers) {
         // add a row per raceDriver and select in dropdown
 
         for (var len = race.raceDrivers.length; i < len; i++) {
-            addRaceDriver(drivers, i + 1, race.raceDrivers[i]);
+            addRaceDriver(drivers, i + 1, race.raceDrivers[i], race.qualiTimes[i]);
         }
 
         $("#idRace").val(race.id);
@@ -59,7 +59,7 @@ function showRace(race, drivers) {
      $("#buttons").show("slow");
 }
 
-function addRaceDriver(drivers, iRaceDriver, raceDriver) {
+function addRaceDriver(drivers, iRaceDriver, raceDriver, qualiTime) {
 // Add row into the able and select the raceDriver
 console.log(iRaceDriver);
     // create the row
@@ -101,6 +101,39 @@ console.log(iRaceDriver);
         driverSelectElement.appendChild(driverOptionElement);
         //console.log(drivers[i]);
     }
+
+    // QualiTime
+    driverDataElement = document.createElement("td");
+    var driverQualiTimeElement = document.createElement("input");
+    driverQualiTimeElement.id = "qualitime-" + iRaceDriver;
+    driverQualiTimeElement.type = "text";
+    driverQualiTimeElement.setAttribute("maxlength", "9");
+   // driverQualiTimeElement.type = "time";
+   // driverQualiTimeElement.step = "0.001";
+ //   driverQualiTimeElement.max = "00:02:00";
+    driverQualiTimeElement.classList.add("form-control");
+   // driverQualiTimeElement.classList.add("mins");
+    if (qualiTime) {
+        var min = Math.floor(qualiTime / 60000);
+        var sec = Math.floor((qualiTime - min * 60000) / 1000);
+        var milli = qualiTime % 1000;
+        driverQualiTimeElement.value = min + ':' + sec + '.' + milli;
+    }
+    driverDataElement.appendChild(driverQualiTimeElement);
+
+   /* driverQualiTimeElement = document.createElement("input");
+        driverQualiTimeElement.type = "text";
+        driverQualiTimeElement.setAttribute("maxlength", "2");
+        driverQualiTimeElement.classList.add("form-control");
+        driverQualiTimeElement.classList.add("secs");
+        driverDataElement.appendChild(driverQualiTimeElement);
+    driverQualiTimeElement = document.createElement("input");
+        driverQualiTimeElement.type = "text";
+        driverQualiTimeElement.setAttribute("maxlength", "3");
+        driverQualiTimeElement.classList.add("form-control");
+        driverQualiTimeElement.classList.add("millis");
+        driverDataElement.appendChild(driverQualiTimeElement);*/
+    driverRowElement.appendChild(driverDataElement);
 
     // add to the table
     document.querySelector("#race-drivers tbody").appendChild(driverRowElement);
@@ -208,19 +241,28 @@ function handleSaveRace(e) {
     // Save the race
     if (checkOk) {
         var raceDriversIds = [];
+        var raceDriversQualiTimes = [];
+
         var nRowsRaceDrivers = $("#race-drivers tbody tr").length - 1;
-        for (var i = 0; i < nRowsRaceDrivers; i++) {
+        for (var i = 0, qualitimeText, qualitimeMillis; i < nRowsRaceDrivers; i++) {
             raceDriversIds.push(document.getElementById("race-driver-" + (i + 1)).value);
+            qualitimeText = document.getElementById("qualitime-" + (i + 1)).value;
+            qualiTimeParts = qualitimeText.split(/[ :.]/);
+            qualitimeMillis = parseInt(qualiTimeParts[0]) * 60000 +
+                                parseInt(qualiTimeParts[1]) * 1000 +
+                                parseInt(qualiTimeParts[2]);
+            raceDriversQualiTimes.push(qualitimeMillis);
         }
 
         var idRace = document.getElementById("idRace").value;
         // Create
         if (!idRace) {
-            gapi.client.race.createRace({"circuit": elementsChecked["circuit"],
-                                              "gp": elementsChecked["gp"],
-                                              "date": elementsChecked["date"],
-                                              "raceDrivers" : raceDriversIds
-                                              }).execute(
+            gapi.client.race.createRace({   "circuit": elementsChecked["circuit"],
+                                            "gp": elementsChecked["gp"],
+                                            "date": elementsChecked["date"],
+                                            "raceDrivers" : raceDriversIds,
+                                            "qualiTimes": raceDriversQualiTimes
+                                        }).execute(
                 function(resp) {
                 //console.log(resp);
                     if (!resp.code) {
@@ -235,11 +277,13 @@ function handleSaveRace(e) {
         }
         // Update
         else {
-            gapi.client.race.updateRace({"id": idRace,
+            gapi.client.race.updateRace({ "id": idRace,
                                           "circuit": elementsChecked["circuit"],
                                           "gp": elementsChecked["gp"],
                                           "date": elementsChecked["date"],
-                                          "raceDrivers": raceDriversIds}).execute(
+                                          "raceDrivers": raceDriversIds,
+                                          "qualiTimes": raceDriversQualiTimes
+                                          }).execute(
                 function(resp) {
                 //console.log(resp);
                     if (!resp.code) {

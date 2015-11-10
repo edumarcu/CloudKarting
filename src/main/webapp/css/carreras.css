@@ -6,3 +6,6 @@
     width: auto !important;
     padding: 0px !important;
 }
+.mins, .secs, .millis {
+    float: left;
+}
