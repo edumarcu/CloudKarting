@@ -18,7 +18,7 @@ function afterInit() {
     // attach handlers
     document.getElementById("circuit").addEventListener("change", handleSelectCircuit);
     document.getElementById("save-race").addEventListener("click", handleSaveRace);
-
+    document.getElementById("quali-1round").addEventListener("click", handleQuali1round);
 
 
 }
@@ -44,7 +44,8 @@ function showRace(race, drivers) {
         // add a row per raceDriver and select in dropdown
 
         for (var len = race.raceDrivers.length; i < len; i++) {
-            addRaceDriver(drivers, i + 1, race.raceDrivers[i], race.qualiTimes[i]);
+            addRaceDriver(drivers, i + 1, race.raceDrivers[i], race.qualiTimes[i], race.qualiPos[i],
+                         race.qualiKarts[i], race.qualiBonus[i], race.qualiGrid[i]);
         }
 
         $("#idRace").val(race.id);
@@ -59,7 +60,8 @@ function showRace(race, drivers) {
      $("#buttons").show("slow");
 }
 
-function addRaceDriver(drivers, iRaceDriver, raceDriver, qualiTime) {
+function addRaceDriver( drivers, iRaceDriver, raceDriver,
+                        qualiTime, qualiPos, qualiKart, qualiBonus, qualiGrid) {
 // Add row into the able and select the raceDriver
 console.log(iRaceDriver);
     // create the row
@@ -107,17 +109,14 @@ console.log(iRaceDriver);
     var driverQualiTimeElement = document.createElement("input");
     driverQualiTimeElement.id = "qualitime-" + iRaceDriver;
     driverQualiTimeElement.type = "text";
-    driverQualiTimeElement.setAttribute("maxlength", "9");
+    driverQualiTimeElement.setAttribute("maxlength", "8");
    // driverQualiTimeElement.type = "time";
-   // driverQualiTimeElement.step = "0.001";
+    //driverQualiTimeElement.step = "0.001";
  //   driverQualiTimeElement.max = "00:02:00";
     driverQualiTimeElement.classList.add("form-control");
    // driverQualiTimeElement.classList.add("mins");
     if (qualiTime) {
-        var min = Math.floor(qualiTime / 60000);
-        var sec = Math.floor((qualiTime - min * 60000) / 1000);
-        var milli = qualiTime % 1000;
-        driverQualiTimeElement.value = min + ':' + sec + '.' + milli;
+        driverQualiTimeElement.value = toTime(qualiTime);
     }
     driverDataElement.appendChild(driverQualiTimeElement);
 
@@ -134,6 +133,18 @@ console.log(iRaceDriver);
         driverQualiTimeElement.classList.add("millis");
         driverDataElement.appendChild(driverQualiTimeElement);*/
     driverRowElement.appendChild(driverDataElement);
+
+    // QualiPos
+    driverRowElement.appendChild(createRaceDriverPart("qualipos", "number", iRaceDriver, qualiPos));
+
+    // QualiKarts
+    driverRowElement.appendChild(createRaceDriverPart("qualikart", "number", iRaceDriver, qualiKart));
+
+    // QualiBonus
+    driverRowElement.appendChild(createRaceDriverPart("qualibonus", "number", iRaceDriver, qualiBonus));
+
+    // QualiGrid
+    driverRowElement.appendChild(createRaceDriverPart("qualigrid", "text", iRaceDriver, qualiGrid));
 
     // add to the table
     document.querySelector("#race-drivers tbody").appendChild(driverRowElement);
@@ -242,16 +253,20 @@ function handleSaveRace(e) {
     if (checkOk) {
         var raceDriversIds = [];
         var raceDriversQualiTimes = [];
+        var raceDriversQualiPos = [];
+        var raceDriversQualiKarts = [];
+        var raceDriversQualiBonus = [];
+        var raceDriversQualiGrid = [];
 
         var nRowsRaceDrivers = $("#race-drivers tbody tr").length - 1;
-        for (var i = 0, qualitimeText, qualitimeMillis; i < nRowsRaceDrivers; i++) {
+        for (var i = 0, qualitimeText; i < nRowsRaceDrivers; i++) {
             raceDriversIds.push(document.getElementById("race-driver-" + (i + 1)).value);
             qualitimeText = document.getElementById("qualitime-" + (i + 1)).value;
-            qualiTimeParts = qualitimeText.split(/[ :.]/);
-            qualitimeMillis = parseInt(qualiTimeParts[0]) * 60000 +
-                                parseInt(qualiTimeParts[1]) * 1000 +
-                                parseInt(qualiTimeParts[2]);
-            raceDriversQualiTimes.push(qualitimeMillis);
+            raceDriversQualiTimes.push(toMillis(qualitimeText));
+            raceDriversQualiPos.push(document.getElementById("qualipos-" + (i + 1)).value);
+            raceDriversQualiKarts.push(document.getElementById("qualikart-" + (i + 1)).value);
+            raceDriversQualiBonus.push(document.getElementById("qualibonus-" + (i + 1)).value);
+            raceDriversQualiGrid.push(document.getElementById("qualigrid-" + (i + 1)).value);
         }
 
         var idRace = document.getElementById("idRace").value;
@@ -261,7 +276,11 @@ function handleSaveRace(e) {
                                             "gp": elementsChecked["gp"],
                                             "date": elementsChecked["date"],
                                             "raceDrivers" : raceDriversIds,
-                                            "qualiTimes": raceDriversQualiTimes
+                                            "qualiTimes": raceDriversQualiTimes,
+                                            "qualiPos": raceDriversQualiPos,
+                                            "qualiKarts": raceDriversQualiKarts,
+                                            "qualiBonus": raceDriversQualiBonus,
+                                            "qualiGrid": raceDriversQualiGrid
                                         }).execute(
                 function(resp) {
                 //console.log(resp);
@@ -282,8 +301,12 @@ function handleSaveRace(e) {
                                           "gp": elementsChecked["gp"],
                                           "date": elementsChecked["date"],
                                           "raceDrivers": raceDriversIds,
-                                          "qualiTimes": raceDriversQualiTimes
-                                          }).execute(
+                                          "qualiTimes": raceDriversQualiTimes,
+                                          "qualiPos": raceDriversQualiPos,
+                                          "qualiKarts": raceDriversQualiKarts,
+                                          "qualiBonus": raceDriversQualiBonus,
+                                          "qualiGrid": raceDriversQualiGrid
+                                        }).execute(
                 function(resp) {
                 //console.log(resp);
                     if (!resp.code) {
@@ -418,4 +441,67 @@ function handleModalDriverToRaceButtonOk(e) {
             }
         }
     );
+}
+
+function toMillis(time) {
+    var timeParts = time.split(/[ :.]/);
+    var timeMillis =   parseInt(timeParts[0]) * 60000 +
+                            parseInt(timeParts[1]) * 1000 +
+                            parseInt(timeParts[2]);
+    return timeMillis;
+}
+
+function toTime(millis) {
+
+    var min = Math.floor(millis / 60000);
+    var sec = ("0" + (Math.floor((millis - min * 60000) / 1000))).slice(-2);
+    var mil = ("0" + (millis % 1000)).slice(-3);
+    var time = min + ':' + sec + '.' + mil;
+
+    return time;
+}
+
+function createRaceDriverPart(part, type, iRaceDriver, value) {
+    var partElement = document.createElement("td");
+    var partInputElement = document.createElement("input");
+    partInputElement.id = part + "-" + iRaceDriver;
+    partInputElement.type = type;
+    partInputElement.classList.add("form-control");
+    if (value) {
+        partInputElement.value = value;
+    }
+    partElement.appendChild(partInputElement);
+
+    return partElement;
+}
+
+function handleQuali1round(e){
+// Calculate the position, Bonus and Grid in base to the qualiTime
+    // get the times
+    var raceDriversQualiTimes = [];
+    var nRowsRaceDrivers = $("#race-drivers tbody tr").length - 1;
+    for (var i = 0, qualitimeText; i < nRowsRaceDrivers; i++) {
+        qualitimeText = document.getElementById("qualitime-" + (i + 1)).value;
+        raceDriversQualiTimes.push({row: i, time: toMillis(qualitimeText)});
+    }
+
+    // order by time
+    function compareTimes(a,b) {
+      if (a.time < b.time)
+        return -1;
+      if (a.time > b.time)
+        return 1;
+      return 0;
+    }
+    raceDriversQualiTimes.sort(compareTimes);
+
+    // show pos, bonus, grid
+    var bonus = [25, 22, 19, 17, 16, 15, 14, 13, 12, 11, 9, 8, 6, 5, 4, 3, 2, 1, 0, 0, 0, 0];
+    for (var i = 0; i < nRowsRaceDrivers; i++) {
+        document.getElementById("qualipos-" + (raceDriversQualiTimes[i].row + 1)).value = i + 1;
+        document.getElementById("qualibonus-" + (raceDriversQualiTimes[i].row + 1)).value = bonus[i];
+        document.getElementById("qualigrid-" + (raceDriversQualiTimes[i].row + 1)).value =
+                                                            "A" + ("0" + (nRowsRaceDrivers - i)).slice(-2);
+    }
+
 }

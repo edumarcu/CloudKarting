@@ -38,19 +38,28 @@ public class Race {
     public Date updateDate;
     public Long[] raceDrivers;
     public Long[] qualiTimes;
+    public Long[] qualiPos;
+    public Long[] qualiKarts;
+    public Long[] qualiBonus;
+    public String[] qualiGrid;
 
     public Race() {
         creationDate = new Date();
         updateDate = creationDate;
     }
 
-    public Race(String circuit, String gp, Date date, Long[] raceDrivers, Long[] qualiTimes) {
+    public Race(String circuit, String gp, Date date, Long[] raceDrivers, Long[] qualiTimes,
+                Long[] qualiPos, Long[] qualiKarts, Long[] qualiBonus, String[] qualiGrid) {
         this();
         this.circuit = circuit;
         this.gp = gp;
         this.date = date;
         this.raceDrivers = raceDrivers;
         this.qualiTimes = qualiTimes;
+        this.qualiPos = qualiPos;
+        this.qualiKarts = qualiKarts;
+        this.qualiBonus = qualiBonus;
+        this.qualiGrid = qualiGrid;
        // System.out.println(this.raceDrivers);
     }
 
@@ -59,9 +68,16 @@ public class Race {
                            @Named("gp") String gp,
                            @Named("date") Date date,
                            @Named("raceDrivers") Long[] raceDrivers,
-                           @Named("qualiTimes") Long[] qualiTimes) {
+                           @Named("qualiTimes") Long[] qualiTimes,
+                           @Named("qualiPos") Long[] qualiPos,
+                           @Named("qualiKarts") Long[] qualiKarts,
+                           @Named("qualiBonus") Long[] qualiBonus,
+                           @Named("qualiGrid") String[] qualiGrid
+                        ) {
 
-        Race race = new Race(circuit, gp, date, raceDrivers, qualiTimes);
+        Race race = new Race(   circuit, gp, date, raceDrivers,
+                                qualiTimes, qualiPos, qualiKarts, qualiBonus, qualiGrid
+                            );
         Key<Race> key = ObjectifyService.ofy().save().entity(race).now();
 
         return getRaceById(key.getId());
@@ -78,7 +94,12 @@ public class Race {
                            @Named("gp") String gp,
                            @Named("date") Date date,
                            @Named("raceDrivers") Long[] raceDrivers,
-                           @Named("qualiTimes") Long[] qualiTimes) {
+                           @Named("qualiTimes") Long[] qualiTimes,
+                           @Named("qualiPos") Long[] qualiPos,
+                           @Named("qualiKarts") Long[] qualiKarts,
+                           @Named("qualiBonus") Long[] qualiBonus,
+                           @Named("qualiGrid") String[] qualiGrid
+                           ) {
 
         Race race = getRaceById(id);
         race.circuit = circuit;
@@ -87,6 +108,10 @@ public class Race {
         race.updateDate = new Date();
         race.raceDrivers = raceDrivers;
         race.qualiTimes = qualiTimes;
+        race.qualiPos = qualiPos;
+        race.qualiKarts = qualiKarts;
+        race.qualiBonus = qualiBonus;
+        race.qualiGrid = qualiGrid;
 
         Key<Race> key = ObjectifyService.ofy().save().entity(race).now();
         return getRaceById(key.getId());

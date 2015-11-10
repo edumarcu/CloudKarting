@@ -9,3 +9,6 @@
 .mins, .secs, .millis {
     float: left;
 }
+.form-control {
+    padding: 2px;
+}
