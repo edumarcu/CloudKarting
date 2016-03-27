@@ -25,6 +25,7 @@ cloudkarting.SCOPES = "https://www.googleapis.com/auth/userinfo.email";
  * @type {boolean}
  */
 cloudkarting.signedIn = false;
+cloudkarting.user;
 
 /**
  * Loads the application UI after the user has completed auth.
@@ -33,7 +34,8 @@ cloudkarting.userAuthed = function() {
     var request = gapi.client.oauth2.userinfo.get().execute(function(resp) {
         if (!resp.code) {
             cloudkarting.signedIn = true;
-            document.getElementById("signinButton").innerHTML = "Sign out";
+            cloudkarting.user = resp;
+            document.getElementById("signinButton").innerHTML = "Sign out " + resp.name;
         }
     });
 };
@@ -57,10 +59,11 @@ cloudkarting.auth = function() {
         cloudkarting.signin(false,
             cloudkarting.userAuthed);
     }
-/*    else {
+    else {
+        gapi.auth.setToken(null);
         cloudkarting.signedIn = false;
         document.getElementById("signinButton").innerHTML = "Sign in";
-    }*/
+    }
 };
 
 /**
@@ -85,6 +88,9 @@ cloudkarting.auth = function() {
      gapi.client.load("race", "v1", callback, apiRoot);
      gapi.client.load("driver", "v1", callback, apiRoot);
      gapi.client.load("oauth2", "v2", callback);
+
+    var signinButton = document.querySelector('#signinButton');
+    signinButton.addEventListener('click', cloudkarting.auth);
  }
 
  /**
